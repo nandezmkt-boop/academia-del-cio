@@ -1,0 +1,139 @@
+// Esquema de datos — Academia del CIO (V1)
+// Derivado de docs/domain.md y docs/adr/0005-convenciones-de-datos.md.
+// Convenciones: PK uuid · timestamptz UTC · soft delete (deletedAt) · onDelete Restrict/SetNull.
+// NO editar a mano el historial de migraciones. Usar el skill `db-change`.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------- Enums ----------
+
+// Solo PROGRESO de la relación. "Archivado" = archivedAt; "Inactivo" = derivado.
+enum EstadoRelacion {
+  IDENTIFICADO
+  INVESTIGADO
+  CONTACTADO
+  EN_CONVERSACION
+  ENTREVISTADO
+}
+
+// Ciclo de producción de una entrevista (episódico).
+enum EstadoEntrevista {
+  PROPUESTA
+  AGENDADA
+  GRABADA
+  PUBLICADA
+}
+
+// Canal de una interacción. NOTA = nota interna (decisión de dominio aprobada).
+enum CanalInteraccion {
+  EMAIL
+  LINKEDIN
+  LLAMADA
+  REUNION
+  NOTA
+  OTRO
+}
+
+enum DireccionInteraccion {
+  ENTRANTE
+  SALIENTE
+  INTERNA
+}
+
+// ---------- Entidades ----------
+
+// Miembro del equipo. id = auth.users.id de Supabase (se asigna en el alta).
+model Usuario {
+  id        String    @id @default(uuid())
+  nombre    String
+  email     String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  interacciones          Interaccion[] @relation("InteraccionAutor")
+  personasResponsable    Persona[]     @relation("PersonaResponsable")
+  entrevistasResponsable Entrevista[]  @relation("EntrevistaResponsable")
+}
+
+// El líder. Centro de gravedad; la relación es con la persona.
+model Persona {
+  id               String         @id @default(uuid())
+  nombre           String
+  email            String? // opcional y NO único: muchas veces aún no se conoce
+  linkedinUrl      String?
+  empresaActual    String? // costura para futura entidad Experiencia
+  cargoActual      String?
+  estadoRelacion   EstadoRelacion @default(IDENTIFICADO)
+  responsableId    String?
+  proximaAccion    String?
+  fechaSeguimiento DateTime?      @db.Date // un seguimiento es un día, no un instante
+  dossier          String? // investigación; combustible de IA
+  temas            String[] // expertise; array en V1 (simplificación deliberada)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  archivedAt       DateTime? // archivo de negocio (consultable)
+  deletedAt        DateTime? // soft delete (oculto)
+
+  responsable   Usuario?      @relation("PersonaResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
+  interacciones Interaccion[]
+  entrevistas   Entrevista[]
+
+  @@index([estadoRelacion])
+  @@index([fechaSeguimiento])
+  @@index([responsableId])
+  @@index([nombre])
+}
+
+// Timeline append-only de la relación (incluye notas internas).
+model Interaccion {
+  id        String               @id @default(uuid())
+  personaId String
+  autorId   String
+  fecha     DateTime             @default(now()) // cuándo ocurrió (puede retro-datarse)
+  canal     CanalInteraccion
+  direccion DireccionInteraccion
+  resumen   String // contenido; una interacción sin contenido no sirve
+  resultado String? // desenlace/sentimiento libre
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  deletedAt DateTime?
+
+  persona Persona @relation(fields: [personaId], references: [id], onDelete: Restrict)
+  autor   Usuario @relation("InteraccionAutor", fields: [autorId], references: [id], onDelete: Restrict)
+
+  @@index([personaId, fecha]) // reconstruir el timeline de una persona
+  @@index([autorId])
+}
+
+// Episodio de grabación. Varias por persona a lo largo del tiempo.
+model Entrevista {
+  id              String           @id @default(uuid())
+  personaId       String
+  estado          EstadoEntrevista @default(PROPUESTA)
+  fecha           DateTime? // null hasta agendar
+  fechaConfirmada Boolean          @default(false)
+  responsableId   String?
+  informeEnviado  Boolean          @default(false)
+  enlaceGrabacion String?
+  notas           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
+
+  persona     Persona  @relation(fields: [personaId], references: [id], onDelete: Restrict)
+  responsable Usuario? @relation("EntrevistaResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
+
+  @@index([personaId])
+  @@index([estado])
+  @@index([fecha])
+  @@index([responsableId])
+}

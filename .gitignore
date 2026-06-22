@@ -1,0 +1,42 @@
+# Dependencias
+node_modules/
+.pnp
+.pnp.js
+
+# Build / Next.js
+.next/
+out/
+build/
+dist/
+
+# Entorno y secretos (NUNCA subir)
+.env
+.env*.local
+.env.development
+.env.production
+
+# Prisma
+# (el esquema y las migraciones SÍ se versionan; los binarios generados no)
+prisma/*.db
+prisma/*.db-journal
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Caché de herramientas
+.turbo/
+.cache/
+coverage/
+
+# Next.js / Vercel / TypeScript
+next-env.d.ts
+*.tsbuildinfo
+.vercel
