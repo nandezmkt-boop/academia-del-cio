@@ -13,4 +13,12 @@ export async function getPersonas() {
   });
 }
 
+/**
+ * Una persona por id. Usa findFirst (no findUnique) para que la extensión de
+ * soft-delete aplique el filtro `deletedAt: null`. Devuelve null si no existe.
+ */
+export async function getPersonaById(id: string) {
+  return db.persona.findFirst({ where: { id } });
+}
+
 export type PersonaListItem = Awaited<ReturnType<typeof getPersonas>>[number];

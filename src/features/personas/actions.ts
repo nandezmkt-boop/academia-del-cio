@@ -2,40 +2,78 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import type { EstadoRelacion } from "@prisma/client";
 
 import { db } from "@/lib/db";
-import { crearPersonaSchema, type CrearPersonaInput } from "./schema";
+import {
+  personaSchema,
+  cambiarEstadoSchema,
+  type PersonaInput,
+} from "./schema";
 
-export type CrearPersonaResult =
+export type ActionResult =
   | { ok: true; id: string }
   | { ok: false; errors: Record<string, string[]> };
 
-/**
- * Server Action: crea una Persona.
- * El servidor SIEMPRE revalida con el mismo schema Zod (no se fía del cliente).
- * Errores de validación → se devuelven como datos para pintarlos en el formulario.
- */
-export async function crearPersona(
-  input: CrearPersonaInput
-): Promise<CrearPersonaResult> {
-  const parsed = crearPersonaSchema.safeParse(input);
+// Normaliza el input del formulario a datos de Prisma (vacíos → null, fecha → Date).
+function toPersonaData(d: PersonaInput) {
+  return {
+    nombre: d.nombre,
+    email: d.email || null,
+    empresaActual: d.empresaActual || null,
+    cargoActual: d.cargoActual || null,
+    linkedinUrl: d.linkedinUrl || null,
+    proximaAccion: d.proximaAccion || null,
+    fechaSeguimiento: d.fechaSeguimiento ? new Date(d.fechaSeguimiento) : null,
+    dossier: d.dossier || null,
+  };
+}
+
+export async function crearPersona(input: PersonaInput): Promise<ActionResult> {
+  const parsed = personaSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, errors: z.flattenError(parsed.error).fieldErrors };
   }
-
-  const d = parsed.data;
-  const persona = await db.persona.create({
-    data: {
-      nombre: d.nombre,
-      email: d.email || null,
-      empresaActual: d.empresaActual || null,
-      cargoActual: d.cargoActual || null,
-      linkedinUrl: d.linkedinUrl || null,
-      proximaAccion: d.proximaAccion || null,
-      // estadoRelacion: default IDENTIFICADO en BD
-    },
-  });
-
+  const persona = await db.persona.create({ data: toPersonaData(parsed.data) });
   revalidatePath("/personas");
   return { ok: true, id: persona.id };
+}
+
+export async function actualizarPersona(
+  id: string,
+  input: PersonaInput
+): Promise<ActionResult> {
+  const parsed = personaSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, errors: z.flattenError(parsed.error).fieldErrors };
+  }
+  await db.persona.update({ where: { id }, data: toPersonaData(parsed.data) });
+  revalidatePath("/personas");
+  revalidatePath(`/personas/${id}`);
+  return { ok: true, id };
+}
+
+export async function cambiarEstadoPersona(
+  id: string,
+  estado: string
+): Promise<ActionResult> {
+  const parsed = cambiarEstadoSchema.safeParse({ estado });
+  if (!parsed.success) {
+    return { ok: false, errors: z.flattenError(parsed.error).fieldErrors };
+  }
+  await db.persona.update({
+    where: { id },
+    data: { estadoRelacion: parsed.data.estado as EstadoRelacion },
+  });
+  revalidatePath("/personas");
+  revalidatePath(`/personas/${id}`);
+  return { ok: true, id };
+}
+
+// Archivar = archivedAt (reversible; ADR 0005). NO borra la fila.
+export async function archivarPersona(id: string): Promise<ActionResult> {
+  await db.persona.update({ where: { id }, data: { archivedAt: new Date() } });
+  revalidatePath("/personas");
+  revalidatePath(`/personas/${id}`);
+  return { ok: true, id };
 }

@@ -6,8 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
-import { crearPersona } from "../actions";
-import { crearPersonaSchema, type CrearPersonaInput } from "../schema";
+import type { ActionResult } from "../actions";
+import { personaSchema, type PersonaInput } from "../schema";
 import {
   Form,
   FormControl,
@@ -17,36 +17,40 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
-export function PersonaForm() {
+type PersonaFormProps = {
+  defaultValues: PersonaInput;
+  onSubmit: (values: PersonaInput) => Promise<ActionResult>;
+  submitLabel: string;
+  redirectTo: string;
+};
+
+export function PersonaForm({
+  defaultValues,
+  onSubmit,
+  submitLabel,
+  redirectTo,
+}: PersonaFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<CrearPersonaInput>({
-    resolver: zodResolver(crearPersonaSchema),
-    defaultValues: {
-      nombre: "",
-      email: "",
-      empresaActual: "",
-      cargoActual: "",
-      linkedinUrl: "",
-      proximaAccion: "",
-    },
+  const form = useForm<PersonaInput>({
+    resolver: zodResolver(personaSchema),
+    defaultValues,
   });
 
-  function onSubmit(values: CrearPersonaInput) {
+  function handleSubmit(values: PersonaInput) {
     startTransition(async () => {
-      const res = await crearPersona(values);
+      const res = await onSubmit(values);
       if (res.ok) {
-        toast.success("Persona creada");
-        router.push("/personas");
+        toast.success("Cambios guardados");
+        router.push(redirectTo);
         router.refresh();
       } else {
         for (const [field, mensajes] of Object.entries(res.errors)) {
-          form.setError(field as keyof CrearPersonaInput, {
-            message: mensajes?.[0],
-          });
+          form.setError(field as keyof PersonaInput, { message: mensajes?.[0] });
         }
         toast.error("Revisa los campos del formulario");
       }
@@ -56,7 +60,7 @@ export function PersonaForm() {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit)}
         className="max-w-xl space-y-4"
       >
         <FormField
@@ -141,15 +145,45 @@ export function PersonaForm() {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="fechaSeguimiento"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Fecha de seguimiento</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="dossier"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Dossier / notas de investigación</FormLabel>
+              <FormControl>
+                <Textarea
+                  rows={5}
+                  placeholder="Quién es, de qué sabe, intereses, actividad reciente…"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="flex gap-2 pt-2">
           <Button type="submit" disabled={isPending}>
-            {isPending ? "Guardando…" : "Crear persona"}
+            {isPending ? "Guardando…" : submitLabel}
           </Button>
           <Button
             type="button"
             variant="outline"
-            onClick={() => router.push("/personas")}
+            onClick={() => router.push(redirectTo)}
           >
             Cancelar
           </Button>

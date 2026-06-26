@@ -1,4 +1,5 @@
-import type { Persona, EstadoRelacion } from "@prisma/client";
+import Link from "next/link";
+import type { Persona } from "@prisma/client";
 
 import {
   Table,
@@ -9,14 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-
-const ESTADO_LABEL: Record<EstadoRelacion, string> = {
-  IDENTIFICADO: "Identificado",
-  INVESTIGADO: "Investigado",
-  CONTACTADO: "Contactado",
-  EN_CONVERSACION: "En conversación",
-  ENTREVISTADO: "Entrevistado",
-};
+import { ESTADO_RELACION } from "../constants";
 
 export function PersonaTable({ personas }: { personas: Persona[] }) {
   if (personas.length === 0) {
@@ -40,12 +34,16 @@ export function PersonaTable({ personas }: { personas: Persona[] }) {
       <TableBody>
         {personas.map((persona) => (
           <TableRow key={persona.id}>
-            <TableCell className="font-medium">{persona.nombre}</TableCell>
+            <TableCell className="font-medium">
+              <Link className="hover:underline" href={`/personas/${persona.id}`}>
+                {persona.nombre}
+              </Link>
+            </TableCell>
             <TableCell>{persona.empresaActual ?? "—"}</TableCell>
             <TableCell>{persona.cargoActual ?? "—"}</TableCell>
             <TableCell>
               <Badge variant="secondary">
-                {ESTADO_LABEL[persona.estadoRelacion]}
+                {ESTADO_RELACION[persona.estadoRelacion].label}
               </Badge>
             </TableCell>
           </TableRow>

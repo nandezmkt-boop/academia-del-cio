@@ -1,7 +1,20 @@
 import Link from "next/link";
 
 import { PersonaForm } from "@/features/personas/components/persona-form";
+import { crearPersona } from "@/features/personas/actions";
+import type { PersonaInput } from "@/features/personas/schema";
 import { buttonVariants } from "@/components/ui/button";
+
+const VALORES_INICIALES: PersonaInput = {
+  nombre: "",
+  email: "",
+  empresaActual: "",
+  cargoActual: "",
+  linkedinUrl: "",
+  proximaAccion: "",
+  fechaSeguimiento: "",
+  dossier: "",
+};
 
 export default function NuevaPersonaPage() {
   return (
@@ -18,7 +31,12 @@ export default function NuevaPersonaPage() {
           Solo el nombre es obligatorio. El resto se puede completar después.
         </p>
       </div>
-      <PersonaForm />
+      <PersonaForm
+        defaultValues={VALORES_INICIALES}
+        onSubmit={crearPersona}
+        submitLabel="Crear persona"
+        redirectTo="/personas"
+      />
     </div>
   );
 }
