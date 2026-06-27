@@ -15,6 +15,13 @@ export type ActionResult =
   | { ok: true; id: string }
   | { ok: false; errors: Record<string, string[]> };
 
+// Revalida todas las vistas que dependen de las personas (lista, tablero y detalle).
+function revalidarPersonas(id?: string) {
+  revalidatePath("/personas");
+  revalidatePath("/pipeline");
+  if (id) revalidatePath(`/personas/${id}`);
+}
+
 // Normaliza el input del formulario a datos de Prisma (vacíos → null, fecha → Date).
 function toPersonaData(d: PersonaInput) {
   return {
@@ -35,7 +42,7 @@ export async function crearPersona(input: PersonaInput): Promise<ActionResult> {
     return { ok: false, errors: z.flattenError(parsed.error).fieldErrors };
   }
   const persona = await db.persona.create({ data: toPersonaData(parsed.data) });
-  revalidatePath("/personas");
+  revalidarPersonas();
   return { ok: true, id: persona.id };
 }
 
@@ -48,8 +55,7 @@ export async function actualizarPersona(
     return { ok: false, errors: z.flattenError(parsed.error).fieldErrors };
   }
   await db.persona.update({ where: { id }, data: toPersonaData(parsed.data) });
-  revalidatePath("/personas");
-  revalidatePath(`/personas/${id}`);
+  revalidarPersonas(id);
   return { ok: true, id };
 }
 
@@ -65,15 +71,13 @@ export async function cambiarEstadoPersona(
     where: { id },
     data: { estadoRelacion: parsed.data.estado as EstadoRelacion },
   });
-  revalidatePath("/personas");
-  revalidatePath(`/personas/${id}`);
+  revalidarPersonas(id);
   return { ok: true, id };
 }
 
 // Archivar = archivedAt (reversible; ADR 0005). NO borra la fila.
 export async function archivarPersona(id: string): Promise<ActionResult> {
   await db.persona.update({ where: { id }, data: { archivedAt: new Date() } });
-  revalidatePath("/personas");
-  revalidatePath(`/personas/${id}`);
+  revalidarPersonas(id);
   return { ok: true, id };
 }

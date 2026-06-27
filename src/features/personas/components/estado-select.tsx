@@ -18,9 +18,11 @@ import { ESTADO_RELACION, ESTADOS_RELACION } from "../constants";
 export function EstadoSelect({
   personaId,
   estado,
+  triggerClassName = "w-52",
 }: {
   personaId: string;
   estado: EstadoRelacion;
+  triggerClassName?: string;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -44,7 +46,7 @@ export function EstadoSelect({
       onValueChange={(value) => handleChange(value as EstadoRelacion)}
       disabled={isPending}
     >
-      <SelectTrigger size="sm" className="w-52">
+      <SelectTrigger size="sm" className={triggerClassName}>
         <SelectValue placeholder="Estado">
           {(value) =>
             ESTADO_RELACION[value as EstadoRelacion]?.label ?? "Estado"

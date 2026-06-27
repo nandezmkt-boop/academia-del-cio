@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users } from "lucide-react";
+import { Users, LayoutGrid } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-const NAV = [{ href: "/personas", label: "Personas", icon: Users }];
+const NAV = [
+  { href: "/personas", label: "Personas", icon: Users },
+  { href: "/pipeline", label: "Pipeline", icon: LayoutGrid },
+];
 
 export function AppSidebar() {
   const pathname = usePathname();
