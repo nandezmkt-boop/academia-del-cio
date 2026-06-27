@@ -21,3 +21,4 @@ reemplaza al anterior. Así queda el rastro del porqué.
 - [0004](./0004-dos-ciclos-de-vida.md) — Dos ciclos de vida (relación vs producción); refina 0003.
 - [0005](./0005-convenciones-de-datos.md) — Convenciones de datos (uuid, timestamps, soft delete, enums, auditoría).
 - [0006](./0006-stack-frontend-next16.md) — Stack frontend y adopción de Next.js 16 (Tailwind v4, shadcn/Base UI, RHF+Zod).
+- [0007](./0007-autor-interacciones-propietario.md) — Autor de interacciones sin auth: usuario propietario sembrado.

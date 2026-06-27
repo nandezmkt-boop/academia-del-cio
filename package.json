@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "Plataforma interna para gestionar entrevistas a líderes tecnológicos.",
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

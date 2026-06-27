@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { getPersonaById } from "@/features/personas/queries";
 import { PersonaHeader } from "@/features/personas/components/persona-header";
+import { InteraccionTimeline } from "@/features/interacciones/components/interaccion-timeline";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -112,6 +113,8 @@ export default async function PersonaDetallePage({
           </dl>
         </CardContent>
       </Card>
+
+      <InteraccionTimeline personaId={persona.id} />
     </div>
   );
 }
