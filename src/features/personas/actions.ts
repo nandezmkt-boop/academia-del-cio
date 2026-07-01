@@ -32,6 +32,11 @@ function toPersonaData(d: PersonaInput) {
     linkedinUrl: d.linkedinUrl || null,
     proximaAccion: d.proximaAccion || null,
     fechaSeguimiento: d.fechaSeguimiento ? new Date(d.fechaSeguimiento) : null,
+    fechaLlamada: d.fechaLlamada ? new Date(d.fechaLlamada) : null,
+    fechaEntrevista: d.fechaEntrevista ? new Date(d.fechaEntrevista) : null,
+    fechaPublicacionPrevista: d.fechaPublicacionPrevista
+      ? new Date(d.fechaPublicacionPrevista)
+      : null,
     dossier: d.dossier || null,
   };
 }

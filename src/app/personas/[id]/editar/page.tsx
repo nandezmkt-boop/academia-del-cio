@@ -28,6 +28,15 @@ export default async function EditarPersonaPage({
     fechaSeguimiento: persona.fechaSeguimiento
       ? persona.fechaSeguimiento.toISOString().slice(0, 10)
       : "",
+    fechaLlamada: persona.fechaLlamada
+      ? persona.fechaLlamada.toISOString().slice(0, 10)
+      : "",
+    fechaEntrevista: persona.fechaEntrevista
+      ? persona.fechaEntrevista.toISOString().slice(0, 10)
+      : "",
+    fechaPublicacionPrevista: persona.fechaPublicacionPrevista
+      ? persona.fechaPublicacionPrevista.toISOString().slice(0, 10)
+      : "",
     dossier: persona.dossier ?? "",
   };
 

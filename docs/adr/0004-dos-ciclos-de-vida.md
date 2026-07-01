@@ -1,6 +1,9 @@
 # 0004 — Dos ciclos de vida (relación vs producción de entrevista)
 
-- **Estado:** Aceptado
+- **Estado:** Aceptado · **parcialmente reemplazado por [0008](./0008-reorientacion-pipeline-entrevista.md)**
+  (el tablero diario pasa a ser un **pipeline único** sobre `Persona`; la separación de
+  almacenamiento Persona/Entrevista se conserva como costura, pero la "vista combinada"
+  descrita abajo queda pospuesta).
 - **Fecha:** 2026-06-17
 - **Decisores:** Usuario (product owner) + Claude (arquitecto)
 - **Relación:** refina y expande `0003-pipeline-simplificado.md` (que sigue vigente

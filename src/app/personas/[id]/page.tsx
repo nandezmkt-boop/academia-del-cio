@@ -47,9 +47,9 @@ export default async function PersonaDetallePage({
     <div className="space-y-6">
       <Link
         className={buttonVariants({ variant: "link" }) + " px-0"}
-        href="/personas"
+        href="/pipeline"
       >
-        ← Volver a personas
+        ← Volver al pipeline
       </Link>
 
       <PersonaHeader persona={persona} />
@@ -88,6 +88,15 @@ export default async function PersonaDetallePage({
             </Campo>
             <Campo etiqueta="Fecha de seguimiento">
               {formatFecha(persona.fechaSeguimiento)}
+            </Campo>
+            <Campo etiqueta="Fecha de la llamada">
+              {formatFecha(persona.fechaLlamada)}
+            </Campo>
+            <Campo etiqueta="Fecha de la entrevista">
+              {formatFecha(persona.fechaEntrevista)}
+            </Campo>
+            <Campo etiqueta="Fecha prevista de publicación">
+              {formatFecha(persona.fechaPublicacionPrevista)}
             </Campo>
             <Campo etiqueta="Temas">
               {persona.temas.length > 0 ? (

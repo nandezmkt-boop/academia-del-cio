@@ -8,7 +8,7 @@
 | **0. Cimientos** | Montar el sistema de trabajo (sin features) | docs, CLAUDE.md, ADRs, Skills, Hooks, git | No se construye sobre suelo indefinido | ✅ En curso |
 | **1. Dominio y datos** | Fijar modelo de dominio + esquema de BD | `domain.md` final, schema Prisma, ADRs | El dato mal modelado contamina todo | ⬜ Siguiente |
 | **2. Esqueleto andante** | Rebanada vertical mínima que persiste | Listar y crear un `Lider` real, desplegado | Valida la tubería end-to-end | ✅ Desplegado en Vercel (academia-del-cio.vercel.app) |
-| **3. Pipeline** | Mover líderes por las etapas | Tablero/lista con estados y fechas | Corazón operativo diario | ⬜ |
+| **3. Pipeline** | Mover líderes por las etapas | Tablero con las 5 etapas (Contactados→Impacto) y sus fechas; Dashboard placeholder | Corazón operativo diario | ✅ Reorientado (ADR 0008) |
 | **4. Memoria de relación** | Histórico de interacciones por líder | Timeline de contactos y notas | El diferenciador real frente a Excel | ⬜ |
 | **5. IA donde aporta** | Investigación y contenido asistidos | Skills + MCP para dossiers/seguimiento | Solo tiene sentido sobre datos sólidos | ⬜ |
 

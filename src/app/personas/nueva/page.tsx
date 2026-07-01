@@ -13,6 +13,9 @@ const VALORES_INICIALES: PersonaInput = {
   linkedinUrl: "",
   proximaAccion: "",
   fechaSeguimiento: "",
+  fechaLlamada: "",
+  fechaEntrevista: "",
+  fechaPublicacionPrevista: "",
   dossier: "",
 };
 
@@ -22,9 +25,9 @@ export default function NuevaPersonaPage() {
       <div>
         <Link
           className={buttonVariants({ variant: "link" }) + " px-0"}
-          href="/personas"
+          href="/pipeline"
         >
-          ← Volver a personas
+          ← Volver al pipeline
         </Link>
         <h1 className="text-2xl font-semibold">Nueva persona</h1>
         <p className="text-sm text-muted-foreground">
@@ -35,7 +38,7 @@ export default function NuevaPersonaPage() {
         defaultValues={VALORES_INICIALES}
         onSubmit={crearPersona}
         submitLabel="Crear persona"
-        redirectTo="/personas"
+        redirectTo="/pipeline"
       />
     </div>
   );

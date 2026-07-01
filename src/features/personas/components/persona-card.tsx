@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Persona } from "@prisma/client";
 
+import { ESTADO_RELACION } from "../constants";
 import { EstadoSelect } from "./estado-select";
 
 function formatFechaCorta(fecha: Date) {
@@ -19,6 +20,10 @@ export function PersonaCard({ persona }: { persona: Persona }) {
     : null;
   const vencido = fechaStr ? fechaStr < hoy : false;
 
+  // Fecha propia de la etapa actual (llamada, entrevista o publicación prevista).
+  const fechaEtapaCfg = ESTADO_RELACION[persona.estadoRelacion].fecha;
+  const fechaEtapa = fechaEtapaCfg ? persona[fechaEtapaCfg.campo] : null;
+
   return (
     <div className="space-y-2 rounded-lg border bg-card p-3 shadow-xs">
       <Link
@@ -32,6 +37,11 @@ export function PersonaCard({ persona }: { persona: Persona }) {
       )}
       {persona.proximaAccion && (
         <p className="text-xs">{persona.proximaAccion}</p>
+      )}
+      {fechaEtapaCfg && fechaEtapa && (
+        <p className="text-xs text-muted-foreground">
+          {fechaEtapaCfg.labelCorto}: {formatFechaCorta(fechaEtapa)}
+        </p>
       )}
       {persona.fechaSeguimiento && (
         <p

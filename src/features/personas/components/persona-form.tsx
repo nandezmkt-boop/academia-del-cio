@@ -160,6 +160,45 @@ export function PersonaForm({
         />
         <FormField
           control={form.control}
+          name="fechaLlamada"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Fecha de la llamada</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="fechaEntrevista"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Fecha de la entrevista</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="fechaPublicacionPrevista"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Fecha prevista de publicación</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="dossier"
           render={({ field }) => (
             <FormItem>

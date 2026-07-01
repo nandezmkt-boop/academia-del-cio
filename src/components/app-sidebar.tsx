@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, LayoutGrid } from "lucide-react";
+import { LayoutDashboard, LayoutGrid } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { href: "/personas", label: "Personas", icon: Users },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/pipeline", label: "Pipeline", icon: LayoutGrid },
 ];
 
@@ -16,7 +16,19 @@ export function AppSidebar() {
 
   return (
     <aside className="w-60 shrink-0 border-r bg-muted/30 p-4">
-      <div className="mb-6 px-2 text-base font-semibold">Academia del CIO</div>
+      <div className="mb-6 flex items-center gap-2.5 px-2">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo.svg"
+          alt="Academia del CIO"
+          width={36}
+          height={36}
+          className="size-9 rounded-lg"
+        />
+        <span className="text-sm font-semibold tracking-tight">
+          Academia del CIO
+        </span>
+      </div>
       <nav className="space-y-1">
         {NAV.map(({ href, label, icon: Icon }) => {
           const active = pathname.startsWith(href);
@@ -27,7 +39,7 @@ export function AppSidebar() {
               className={cn(
                 "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors",
                 active
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-primary/10 font-medium text-primary"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >

@@ -18,7 +18,8 @@ reemplaza al anterior. Así queda el rastro del porqué.
 - [0001](./0001-eleccion-de-stack.md) — Elección de stack (Next.js, Supabase, shadcn/ui, Vercel).
 - [0002](./0002-orm-prisma.md) — ORM: Prisma sobre Drizzle.
 - [0003](./0003-pipeline-simplificado.md) — Pipeline simplificado (11 → 6 estados).
-- [0004](./0004-dos-ciclos-de-vida.md) — Dos ciclos de vida (relación vs producción); refina 0003.
+- [0004](./0004-dos-ciclos-de-vida.md) — Dos ciclos de vida (relación vs producción); refina 0003. **Parcialmente reemplazado por 0008.**
 - [0005](./0005-convenciones-de-datos.md) — Convenciones de datos (uuid, timestamps, soft delete, enums, auditoría).
 - [0006](./0006-stack-frontend-next16.md) — Stack frontend y adopción de Next.js 16 (Tailwind v4, shadcn/Base UI, RHF+Zod).
 - [0007](./0007-autor-interacciones-propietario.md) — Autor de interacciones sin auth: usuario propietario sembrado.
+- [0008](./0008-reorientacion-pipeline-entrevista.md) — Reorientación al pipeline de entrevista (pipeline único, 5 etapas nuevas); reemplaza parcialmente 0004.

@@ -1,49 +1,49 @@
-# Pipeline de la relación — Academia del CIO
+# Pipeline de la Academia del CIO
 
-> Documento durable. Define los estados del proceso. **Importante:** lo que parecía
-> un único pipeline son en realidad **dos ciclos de vida** (ver `adr/0004-dos-ciclos-de-vida.md`).
-> Esta es la evolución del recorte inicial de 11→6 estados (`adr/0003`).
+> Documento durable. Define las etapas del proceso. **El Pipeline es el centro del
+> producto.** Evolución: 11→6 estados (`adr/0003`) → dos ciclos (`adr/0004`) →
+> **pipeline único de entrevista** (`adr/0008`, vigente).
 
-## Por qué dos ciclos y no uno
-Un líder puede tener **varias entrevistas a lo largo del tiempo**. Si el estado fuera
-un único campo en la Persona, alguien ya `Publicado` al que empiezas una segunda
-entrevista no podría estar a la vez `Publicado` y `En conversación`. Por eso el estado
-de la **relación** (perpetuo) y el de la **entrevista** (episódico) se guardan aparte.
+## El pipeline (vive en la Persona)
+Un pipeline lineal único; cada etapa guarda la fecha que importa en ese momento.
+La entidad principal sigue siendo la **Persona** (`Persona.estadoRelacion`).
 
-## Ciclo 1 — Estado de la RELACIÓN (vive en la Persona)
-1. **Identificado** — candidato detectado, sin investigar.
-2. **Investigado** — estudiado y listo para contactar.
-3. **Contactado** — enviado el primer contacto.
-4. **En conversación** — diálogo activo (absorbe: respuesta recibida, llamada
-   agendada, interesado). El matiz vive en la última *interacción*, no en un estado.
-5. **Entrevistado** — ya se ha grabado al menos una entrevista; la relación continúa
-   (nurture a largo plazo).
+1. **Contactados** — primer contacto enviado; pendientes de responder. *(Sin fecha.)*
+2. **Interesados** — han respondido positivamente. → `fechaLlamada`.
+3. **Confirmados** — la entrevista está cerrada. → `fechaEntrevista`.
+4. **Entrevistados** — la entrevista ya se ha realizado. → `fechaPublicacionPrevista`.
+5. **Impacto** — la entrevista ya ha sido publicada. *(Sin fecha; en el futuro alojará
+   las estadísticas automáticas de YouTube/LinkedIn y el envío del informe.)*
 
-> **Archivado** e **Inactivo** NO son estados de este enum:
-> - *Archivado* se representa con `archivedAt` (se puede archivar en cualquier punto del embudo).
+**Entrada al pipeline:** toda persona nueva se crea directamente en **Contactados**.
+No hay fase de pre-contacto en esta versión: la plataforma empieza cuando alguien ya ha
+sido contactado manualmente.
+
+> **Archivado** e **Inactivo** NO son etapas del enum:
+> - *Archivado* se representa con `archivedAt` (se puede archivar en cualquier punto).
 > - *Inactivo* se **deriva** (seguimiento vencido o N días sin interacción), no se almacena.
 > Ver `adr/0005-convenciones-de-datos.md`.
 
-## Ciclo 2 — Estado de PRODUCCIÓN (vive en cada Entrevista)
-1. **Propuesta** — entrevista planteada, sin fecha cerrada.
-2. **Agendada** — con `fecha`; `fechaConfirmada` distingue tentativa de confirmada
-   (absorbe "fecha pendiente / fecha cerrada").
-3. **Grabada** — realizada.
-4. **Publicada** — el contenido derivado se ha publicado.
-- `informeEnviado` (bool) — marca de cierre sobre la entrevista, **no** un estado.
-
-## El "tablero" diario = vista combinada
-Lo que el usuario ve a diario es una sola lista/tablero, pero es una **vista** que
-combina ambos ciclos:
-- Para un líder **sin entrevista activa**, se muestra su estado de relación.
-- Para uno **con entrevista en curso**, se muestra el estado de producción de esa entrevista.
-Esto es una decisión de **presentación** (Fase 3), no de almacenamiento.
-
-## Campos asociados (se concretan al derivar el schema)
-- En Persona: `estadoRelacion`, `proximaAccion`, `fechaSeguimiento`.
-- En Entrevista: `estado`, `fecha`, `fechaConfirmada`, `informeEnviado`.
+## Campos asociados (en Persona)
+- `estadoRelacion` — la etapa actual del pipeline.
+- `fechaLlamada`, `fechaEntrevista`, `fechaPublicacionPrevista` — la fecha propia de cada
+  etapa (una por estado que la necesita).
+- `proximaAccion`, `fechaSeguimiento` — lo que evita que un contacto se enfríe.
 
 ## Transiciones
-Avance normal hacia adelante; se permite retroceder (p.ej. reabrir una conversación).
-Sin reglas estrictas de transición por defecto: el estado es una **etiqueta honesta**
-del momento, no una máquina de estados rígida. Se endurecerá solo si hace falta.
+Avance normal hacia adelante; se permite retroceder. Sin reglas estrictas de transición:
+el estado es una **etiqueta honesta** del momento, no una máquina de estados rígida.
+Se endurecerá solo si hace falta. La fecha de cada etapa se edita hoy en el formulario
+de la Persona.
+
+## Costura: ciclo de producción de la Entrevista (durmiente)
+El modelo `Entrevista` (`Propuesta → Agendada → Grabada → Publicada` + `informeEnviado`)
+**sigue en el esquema pero sin UI**. Se conserva como punto de extensión para, sin
+rediseño (ver `adr/0008` y `adr/0004`):
+- las **automatizaciones de "Impacto"** (stats + informe), que son por-entrevista, y
+- permitir **varias entrevistas por persona** a lo largo del tiempo.
+
+## Preparado para el futuro (no construido)
+- **Prospección automática (agente de LinkedIn):** el enum se diseñó para poder
+  *prepender* una etapa previa (p. ej. `PROSPECTO`) mediante una migración barata, que
+  alimentaría "Contactados" sin romper la arquitectura.

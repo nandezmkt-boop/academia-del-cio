@@ -10,23 +10,27 @@ con una persona, y es perpetua**: la entrevista y el contenido son *episodios*
 dentro de una relación que continúa. Tres consecuencias de modelado:
 
 1. **Persona-céntrico**, no deal-céntrico.
-2. **Dos ciclos de vida entrelazados** (relación + producción de entrevista), no uno.
+2. **Un pipeline único sobre la Persona**, con la producción de cada entrevista modelada
+   aparte (`Entrevista`) como costura episódica para el futuro (ver `adr/0008`, que
+   reorienta el enfoque de "dos ciclos combinados" de `adr/0004`).
 3. El activo real es la **memoria narrativa** (timeline + dossier), diseñada para
    alimentar IA. Se captura *texto e intención*, no solo flags de estado.
 
-## Los dos ciclos de vida
-- **Estado de la relación** — vive en la **Persona**; es perpetuo y solo describe
-  **progreso**: `Identificado → Investigado → Contactado → En conversación → Entrevistado`.
-  - "Archivado" NO es un estado: se representa con `archivedAt` (ortogonal al embudo).
-  - "Inactivo" NO se almacena: se **deriva** (seguimiento vencido o N días sin contacto).
-  - Ver `adr/0005-convenciones-de-datos.md`.
-- **Estado de producción** — vive en cada **Entrevista**; es episódico:
-  `Propuesta → Agendada → Grabada → Publicada` (+ `informeEnviado`).
+## El pipeline operativo (y la costura de producción)
+> Reorientado en `adr/0008`: el tablero diario es un **pipeline único** sobre la Persona,
+> no la "vista combinada" de dos ciclos que planteaba `adr/0004` (pospuesta).
 
-El "tablero" que se ve a diario es una **vista combinada** de ambos (presentación);
-por debajo se guardan en dos sitios distintos. Detalle en `pipeline.md`.
-Motivo de la separación: un líder ya `Publicado` al que se le hace una segunda
-entrevista no puede estar a la vez `Publicado` y `En conversación` en un único campo.
+- **Pipeline de la Persona** — vive en `Persona.estadoRelacion` (la entidad principal):
+  `Contactados → Interesados → Confirmados → Entrevistados → Impacto`. Cada etapa guarda
+  su fecha (`fechaLlamada`, `fechaEntrevista`, `fechaPublicacionPrevista`). Toda persona
+  nueva entra como **Contactados** (sin pre-contacto en V1).
+  - "Archivado" NO es una etapa: se representa con `archivedAt` (ortogonal al embudo).
+  - "Inactivo" NO se almacena: se **deriva** (seguimiento vencido o N días sin contacto).
+  - Ver `adr/0005-convenciones-de-datos.md` y `pipeline.md`.
+- **Ciclo de producción de la Entrevista** — vive en cada **Entrevista**; es episódico:
+  `Propuesta → Agendada → Grabada → Publicada` (+ `informeEnviado`). **Costura durmiente**
+  (sin UI en V1): habilitará las automatizaciones de "Impacto" y varias entrevistas por
+  persona a lo largo del tiempo sin rediseño.
 
 ## Glosario
 - **Persona / Líder:** el ser humano entrevistable. Centro de gravedad; persiste
@@ -42,7 +46,9 @@ entrevista no puede estar a la vez `Publicado` y `En conversación` en un único
 La relación es con un humano; todo cuelga de aquí.
 - Identidad: nombre, email, LinkedIn / URLs públicas.
 - Situación actual: `empresaActual`, `cargoActual` (TEXTO en V1; ver costura abajo).
-- Relación: `estadoRelacion`, `responsable` (→Usuario).
+- Relación: `estadoRelacion` (etapa del pipeline), `responsable` (→Usuario).
+- Fechas de etapa del pipeline: `fechaLlamada` (Interesados), `fechaEntrevista`
+  (Confirmados), `fechaPublicacionPrevista` (Entrevistados).
 - **Próxima acción** (`proximaAccion`, texto) + **`fechaSeguimiento`** — lo que evita
   que un contacto se enfríe. Campo crítico.
 - Investigación: `dossier` (texto rico), `temas` (lista simple de expertise).

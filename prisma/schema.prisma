@@ -15,13 +15,15 @@ datasource db {
 
 // ---------- Enums ----------
 
-// Solo PROGRESO de la relación. "Archivado" = archivedAt; "Inactivo" = derivado.
+// Etapas del pipeline. La persona entra ya como CONTACTADO (no hay pre-contacto en V1).
+// Diseñado para poder prepender una fase de prospección en el futuro sin romper nada.
+// "Archivado" = archivedAt; "Inactivo" = derivado.
 enum EstadoRelacion {
-  IDENTIFICADO
-  INVESTIGADO
   CONTACTADO
-  EN_CONVERSACION
+  INTERESADO
+  CONFIRMADO
   ENTREVISTADO
+  IMPACTO
 }
 
 // Ciclo de producción de una entrevista (episódico).
@@ -66,22 +68,26 @@ model Usuario {
 
 // El líder. Centro de gravedad; la relación es con la persona.
 model Persona {
-  id               String         @id @default(uuid())
-  nombre           String
-  email            String? // opcional y NO único: muchas veces aún no se conoce
-  linkedinUrl      String?
-  empresaActual    String? // costura para futura entidad Experiencia
-  cargoActual      String?
-  estadoRelacion   EstadoRelacion @default(IDENTIFICADO)
-  responsableId    String?
-  proximaAccion    String?
-  fechaSeguimiento DateTime?      @db.Date // un seguimiento es un día, no un instante
-  dossier          String? // investigación; combustible de IA
-  temas            String[] // expertise; array en V1 (simplificación deliberada)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  archivedAt       DateTime? // archivo de negocio (consultable)
-  deletedAt        DateTime? // soft delete (oculto)
+  id                       String         @id @default(uuid())
+  nombre                   String
+  email                    String? // opcional y NO único: muchas veces aún no se conoce
+  linkedinUrl              String?
+  empresaActual            String? // costura para futura entidad Experiencia
+  cargoActual              String?
+  estadoRelacion           EstadoRelacion @default(CONTACTADO)
+  responsableId            String?
+  proximaAccion            String?
+  fechaSeguimiento         DateTime?      @db.Date // un seguimiento es un día, no un instante
+  // Fechas propias de cada etapa del pipeline (cada estado guarda la suya).
+  fechaLlamada             DateTime?      @db.Date // "Interesados": fecha de la llamada
+  fechaEntrevista          DateTime?      @db.Date // "Confirmados": fecha de la entrevista
+  fechaPublicacionPrevista DateTime?      @db.Date // "Entrevistados": fecha prevista de publicación
+  dossier                  String? // investigación; combustible de IA
+  temas                    String[] // expertise; array en V1 (simplificación deliberada)
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  archivedAt               DateTime? // archivo de negocio (consultable)
+  deletedAt                DateTime? // soft delete (oculto)
 
   responsable   Usuario?      @relation("PersonaResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
   interacciones Interaccion[]

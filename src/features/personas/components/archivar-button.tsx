@@ -21,7 +21,7 @@ export function ArchivarButton({ personaId }: { personaId: string }) {
       const res = await archivarPersona(personaId);
       if (res.ok) {
         toast.success("Persona archivada");
-        router.push("/personas");
+        router.push("/pipeline");
         router.refresh();
       } else {
         toast.error("No se pudo archivar");
