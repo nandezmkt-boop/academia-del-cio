@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, LayoutGrid } from "lucide-react";
+import { LayoutDashboard, LayoutGrid, LogOut } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { logout } from "@/features/auth/actions";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -14,8 +15,10 @@ const NAV = [
 export function AppSidebar() {
   const pathname = usePathname();
 
+  if (pathname === "/login") return null;
+
   return (
-    <aside className="w-60 shrink-0 border-r bg-muted/30 p-4">
+    <aside className="flex h-screen w-60 shrink-0 flex-col border-r bg-muted/30 p-4">
       <div className="mb-6 flex items-center gap-2.5 px-2">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -49,6 +52,15 @@ export function AppSidebar() {
           );
         })}
       </nav>
+      <form action={logout} className="mt-auto">
+        <button
+          type="submit"
+          className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        >
+          <LogOut className="size-4" />
+          Cerrar sesión
+        </button>
+      </form>
     </aside>
   );
 }

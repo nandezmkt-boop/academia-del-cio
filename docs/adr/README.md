@@ -23,3 +23,4 @@ reemplaza al anterior. Así queda el rastro del porqué.
 - [0006](./0006-stack-frontend-next16.md) — Stack frontend y adopción de Next.js 16 (Tailwind v4, shadcn/Base UI, RHF+Zod).
 - [0007](./0007-autor-interacciones-propietario.md) — Autor de interacciones sin auth: usuario propietario sembrado.
 - [0008](./0008-reorientacion-pipeline-entrevista.md) — Reorientación al pipeline de entrevista (pipeline único, 5 etapas nuevas); reemplaza parcialmente 0004.
+- [0009](./0009-autenticacion-minima-password-unico.md) — Autenticación mínima por contraseña única de administrador (cookie firmada, sin BD); resuelve la autenticación diferida en 0007.
